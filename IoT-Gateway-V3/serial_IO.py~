@@ -1,0 +1,24 @@
+from serial_get import *
+
+class serial_data(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+		global _serial_DATA
+
+	def run(self):
+		_serial_DATA = Serial_Functions()
+		_serial_DATA.serial_init()
+		_serial_DATA.flush_buffer()
+        	while True:
+            		sleep(0.01)
+			_ser_data = _serial_DATA.serial_readline()
+			if _ser_data is False:
+				pass
+			elif _ser_data == "NULL":
+				pass
+			else:
+				CFAR_queue.get_lock()
+				CFAR_queue.put(_ser_data)
+				print str(_ser_data)
+				CFAR_queue.release_lock()
+				_serial_FILTER.flush_buffer()
