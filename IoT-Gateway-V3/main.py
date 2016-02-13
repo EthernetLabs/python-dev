@@ -12,10 +12,11 @@ from serial_config import ser_init
 from serial_frame import serial_get
 from serial_IO import serial_data
 from filter_IO import filter_data
+from CFAR_decoder import CFAR_Thread
 
 #Please modify the directory path (_firmware_dir) for the variable below: 
 #_firmware_dir = '/opt/IoT-Gateway'
-_firmware_dir = '/home/ahmer/Techknox/Python_Exercises/IoT-Gateway-V2/'
+_firmware_dir = '/home/ahmer/Ahmer/Techknox/Python_Exercises/IoT-Gateway-V2/'
 _thread_pool = []
 
 
@@ -47,6 +48,11 @@ def main():
         t1 = filter_data()
         t1.start()
         _thread_pool.append(t1)
+
+        t2 = CFAR_Thread()
+	t2.start()
+	_thread_pool.append(t2)
+
 
 
 

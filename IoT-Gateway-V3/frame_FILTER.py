@@ -131,15 +131,30 @@ class frame_filter():
                 _expanded_frame[4] = _frame[8]
                 _expanded_frame[5] = _frame[9]
                 _expanded_frame[6] = _frame[10]
-                _expanded_frame[7] = _frame[11:12]
-                _expanded_frame[8] = _frame[12]
-                _expanded_frame[9] = _frame[13]
-                #dat = 13 + int(_expanded_frame[8])
-                _expanded_frame[10] = _frame[13:14]
-                _expanded_frame[11] = _frame[14:15]
+                _expanded_frame[7] = _frame[11:13]
+                _expanded_frame[8] = _frame[13]
+                _expanded_frame[9] = _frame[14]
+                dat = 15 + int(_expanded_frame[8])
+                _expanded_frame[10] = _frame[15:dat]
+                _expanded_frame[11] = _frame[dat:dat+2]
             except IndexError:
                 print "Invalid Frame, Unable to parse MAC: List index out of range" + "\n"
                 return [False, _reconstructed_frame]
+
+            _reconstructed_frame = {'NETID'     : _expanded_frame[0], \
+                            'SRCID'     : _expanded_frame[1], \
+                            'DSTID'     : _expanded_frame[2], \
+                            'PHYTYPE'   : _expanded_frame[3], \
+                            'DEVTYPE'   : _expanded_frame[4], \
+                            'TOM'       : _expanded_frame[5], \
+                            'PRIO'      : _expanded_frame[6], \
+                            'SEQNUM'    : _expanded_frame[7], \
+                            'PDUL'      : _expanded_frame[8], \
+                            'PDUT'      : _expanded_frame[9], \
+                            'PDU'       : _expanded_frame[10], \
+                            'ECC'       : _expanded_frame[11]}
+            print "Reconstructed FRAME is: " + str(_reconstructed_frame) + "\n"
+                
             
             if len(_expanded_frame) < _frame_fields_num:
                 print "_frame_fields_num"
@@ -179,6 +194,10 @@ class frame_filter():
             elif len(_expanded_frame[3]) < _frame_phytype_len:
                 print "_frame_phytype"
                 return [False, _reconstructed_frame]
+            elif _expanded_frame[3] != 'Z' and _expanded_frame[4] != 'W' and _expanded_frame[4] != 'E' \
+                 and _expanded_frame[3] != 'z' and _expanded_frame[4] != 'w' and _expanded_frame[4] != 'e':
+                print "INVALID PHYTYPE"
+                return [False, _reconstructed_frame]            
 
             #Verify DEVTYPE Field Width
             elif len(_expanded_frame[4]) > _frame_devtype_len:
@@ -187,7 +206,11 @@ class frame_filter():
             elif len(_expanded_frame[4]) < _frame_devtype_len:
                 print "_frame_devtype"
                 return [False, _reconstructed_frame]
-
+            elif _expanded_frame[4] != 'S' and _expanded_frame[5] != 'R' and _expanded_frame[5] != 'G' and _expanded_frame[5] != 'C' \
+                 and _expanded_frame[4] != 's' and _expanded_frame[5] != 'r' and _expanded_frame[5] != 'g' and _expanded_frame[5] != 'c':
+                print "INVALID DEVTYPE"
+                return [False, _reconstructed_frame]
+            
 ##            #Verify MACID Field Width
 ##            elif len(_expanded_frame[3]) > _frame_macid_len:
 ##                return [False, _reconstructed_frame]
@@ -201,6 +224,12 @@ class frame_filter():
             elif len(_expanded_frame[5]) < _frame_tom_len:
                 print "_frame_tom"
                 return [False, _reconstructed_frame]
+            elif _expanded_frame[5] != 'A' and _expanded_frame[5] != 'T' and _expanded_frame[5] != 'I' and _expanded_frame[5] != 'P' and _expanded_frame[5] != 'G' \
+                 and _expanded_frame[5] != 'B' and _expanded_frame[5] != 'H' and _expanded_frame[5] != 'S' and _expanded_frame[5] != 'R' and _expanded_frame[5] != 'W' \
+                 and _expanded_frame[5] != 'a' and _expanded_frame[5] != 't' and _expanded_frame[5] != 'i' and _expanded_frame[5] != 'p' and _expanded_frame[5] != 'g' \
+                 and _expanded_frame[5] != 'b' and _expanded_frame[5] != 'h' and _expanded_frame[5] != 's' and _expanded_frame[5] != 'r' and _expanded_frame[5] != 'w':
+                print "INVALID TOM"
+                return [False, _reconstructed_frame]
 
             #Verify PRIO Field Width
             elif len(_expanded_frame[6]) > _frame_prio_len:
@@ -209,14 +238,18 @@ class frame_filter():
             elif len(_expanded_frame[6]) < _frame_prio_len:
                 print "_frame_prio"
                 return [False, _reconstructed_frame]
-
+            elif _expanded_frame[6].isdigit() == False:
+                print "PRIO must be number string"
+                return [False, _reconstructed_frame]
+            
             #Verify SEQNUM Field Width
-##            elif len(_expanded_frame[7]) > _frame_seqnum_len:
-##                print "_frame_seqnum"
-##                return [False, _reconstructed_frame]
-##            elif len(_expanded_frame[7]) < _frame_seqnum_len:
-##                print "_frame_seqnum"
-##                return [False, _reconstructed_frame]
+            elif len(_expanded_frame[7]) > _frame_seqnum_len:
+                print "_frame_seqnum"
+                return [False, _reconstructed_frame]
+            elif len(_expanded_frame[7]) < _frame_seqnum_len:
+                print "_frame_seqnum"
+                return [False, _reconstructed_frame]
+                        
 
             #Verify PDUL Field Width
             elif len(_expanded_frame[8]) > _frame_pdul_len:
@@ -225,6 +258,10 @@ class frame_filter():
             elif len(_expanded_frame[8]) < _frame_pdul_len:
                 print "_frame_PDUL"
                 return [False, _reconstructed_frame]
+            elif _expanded_frame[8].isdigit() == False:
+                print "PDUL must be number string"
+                return [False, _reconstructed_frame]
+            
 
             #Verify PDUT Field Width
             elif len(_expanded_frame[9]) > _frame_pdut_len:
@@ -235,12 +272,12 @@ class frame_filter():
                 return [False, _reconstructed_frame]
 
             #Verify ECC Field Width
-##            elif len(_expanded_frame[11]) > _frame_ecc_len:
-##                print "_frame_ECC"
-##                return [False, _reconstructed_frame]
-##            elif len(_expanded_frame[11]) < _frame_ecc_len:
-##                print "_frame_ECC"
-##                return [False, _reconstructed_frame]
+            elif len(_expanded_frame[11]) > _frame_ecc_len:
+                print "_frame_ECC"
+                return [False, _reconstructed_frame]
+            elif len(_expanded_frame[11]) < _frame_ecc_len:
+                print "_frame_ECC"
+                return [False, _reconstructed_frame]
 
             #Verify PDU Field Width
             elif len(_expanded_frame[10]) > _frame_pdu_len:
@@ -255,8 +292,8 @@ class frame_filter():
                             'TOM'       : _expanded_frame[5], \
                             'PRIO'      : _expanded_frame[6], \
                             'SEQNUM'    : _expanded_frame[7], \
-                            'PDUL'      : _expanded_frame[6], \
-                            'PDUT'      : _expanded_frame[7], \
+                            'PDUL'      : _expanded_frame[8], \
+                            'PDUT'      : _expanded_frame[9], \
                             'PDU'       : _expanded_frame[10], \
                             'ECC'       : _expanded_frame[11]}
                 print "Reconstructed FRAME is: " + str(_reconstructed_frame) + "\n"
