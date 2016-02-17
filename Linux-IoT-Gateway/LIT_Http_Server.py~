@@ -1,9 +1,0 @@
-import threading
-import 
-class LIT_Http_Server(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)
-
-	def run(self):
-		_HTTP_SERVER = IoT_Gateway_http_server()
-		_HTTP_SERVER.start_server()
